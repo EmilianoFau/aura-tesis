@@ -1,0 +1,26 @@
+<div class="chat-home-container">
+  <div class="chat-home-layout">
+    <div class="chat-home-center">
+      <div class="welcome-section">
+        <h1 class="welcome-title">¿En qué estás trabajando?</h1>
+        <p class="welcome-subtitle">{{ welcomeSubtitle() }}</p>
+      </div>
+
+      <app-chat-composer
+        [perms]="perms()"
+        [voiceEnabled]="true"
+        [busy]="submitting()"
+        [attachedDocs]="attachedDocs()"
+        [hasDocs]="pendingFiles().length > 0"
+        [allowEmptyTextWithDocs]="true"
+        chatPlaceholder="¿Cómo puedo ayudarte hoy?"
+        (submitChat)="onSubmitChat($event)"
+        (generate)="onGenerate($event)"
+        (filesSelected)="onFilesSelected($event)"
+        (removeDoc)="onRemoveDoc($event)"
+        (audioCaptured)="onAudioCaptured($event)"
+        (composerModeChange)="composerMode.set($event)"
+      />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+@host = {{host}}
+@token = {{token}}
+@classificationLevelId = {{classificationLevelId}}
+@compartmentId = {{compartmentId}}
+@compartmentIdAlt = {{compartmentIdAlt}}
+
+### Crear colección — cuerpo válido (nivel + al menos un compartimento)
+# Requiere JSON: `name`, `classification_level_id`, `compartment_ids` (lista no vacía).
+# Devuelve: 201 y la colección con `classification_level` y `compartments` expandidos.
+
+POST {{host}}/api/v1/document-collections/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Mis expedientes QA",
+  "classification_level_id": {{classificationLevelId}},
+  "compartment_ids": [{{compartmentId}}]
+}
+
+###
+
+### Crear colección — varios compartimentos
+# IDs duplicados se deduplican en servidor antes de crear pivotes.
+
+POST {{host}}/api/v1/document-collections/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Paquete multi-cofre",
+  "classification_level_id": {{classificationLevelId}},
+  "compartment_ids": [{{compartmentId}}, {{compartmentIdAlt}}]
+}
+
+###
+
+### Crear colección — nombre con espacios (trim en servidor)
+
+POST {{host}}/api/v1/document-collections/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "  Reviews trimmer  ",
+  "classification_level_id": {{classificationLevelId}},
+  "compartment_ids": [{{compartmentId}}]
+}
+
+###
+
+### Crear colección — `compartment_ids` vacíos (lista vacía prohibida)
+
+POST {{host}}/api/v1/document-collections/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Coleccion invalida empty compartments",
+  "classification_level_id": {{classificationLevelId}},
+  "compartment_ids": []
+}
+
+###
+
+### Crear colección — sin classification_level_id (validación)
+# Falta FK obligatorio al crear desde cero si no se usa partial serializer create request.
+
+POST {{host}}/api/v1/document-collections/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Solo texto",
+  "compartment_ids": [{{compartmentId}}]
+}

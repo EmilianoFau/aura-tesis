@@ -1,0 +1,55 @@
+<section class="login-form">
+  <header class="login-form__header">
+    <h1 class="login-form__title">Tu asistente inteligente para consultas documentales</h1>
+  </header>
+
+  <div class="login-form__container">
+    <form class="login-form__form" (ngSubmit)="onSubmit($event)" novalidate>
+      <div class="login-field">
+        <label class="login-field__label" for="lf-username">Usuario</label>
+        <input
+          id="lf-username"
+          type="text"
+          class="login-field__input"
+          placeholder="Tu nombre de usuario"
+          autocomplete="username"
+          [ngModel]="username()"
+          (ngModelChange)="username.set($event)"
+          name="username"
+          [disabled]="submitting()"
+        />
+      </div>
+
+      <div class="login-field">
+        <label class="login-field__label" for="lf-password">Contraseña</label>
+        <input
+          id="lf-password"
+          type="password"
+          class="login-field__input"
+          placeholder="Tu contraseña"
+          autocomplete="current-password"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          name="password"
+          [disabled]="submitting()"
+        />
+      </div>
+
+      @if (errorMessage()) {
+        <p class="login-form__error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <app-btn-text [buttonType]="'submit'"
+        [label]="submitting() ? 'Ingresando…' : 'Ingresar'"
+        [disabled]="submitting()"
+       />
+
+      <app-btn-text [buttonType]="'button'"
+        [variant]="'outline'"
+        [label]="'Ingresar como admin'"
+        [disabled]="submitting()"
+        (click)="goToAdmin()"
+       />
+    </form>
+  </div>
+</section>

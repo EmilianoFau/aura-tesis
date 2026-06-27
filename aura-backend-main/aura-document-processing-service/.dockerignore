@@ -1,0 +1,69 @@
+# Virtual environments
+.venv/
+venv/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+.vscode/
+
+# Python cache (all levels)
+**/__pycache__/
+**/*.py[cod]
+**/*.pyo
+**/*.pyd
+**/*.so
+**/*.egg
+**/*.egg-info
+dist/
+build/
+.tox/
+.coverage
+.coverage.*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+
+# Logs
+*.log
+
+# Environment files (secrets must come from env vars / secrets manager)
+.env
+.env.*
+# ...except the docker-targeted env files: the build reads them as the source of
+# truth for which models to bake. They're copied into the builder stage only and
+# removed in the same layer, so they never reach the final image.
+!env/.env.docker
+!env/.env.docker.gpu
+
+# Database
+db.sqlite3
+
+# Tests
+test/
+test_documents/
+
+# Docker files (no need to copy into image)
+.dockerignore
+Dockerfile
+DockerfileGPU
+docker-compose*.yml
+
+# Docs
+*.md
+docs/
+
+# Dev config
+pytest.ini
+setup.cfg
+.coveragerc
+
+# HTTP request files (dev tooling only)
+http/
+
+.claude/

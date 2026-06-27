@@ -1,0 +1,13 @@
+@dpsBase = http://localhost:8000/api/v1
+@authToken = user_token_123
+
+### Borrado lógico de documento
+DELETE {{dpsBase}}/delete-document/soft/document/38
+Accept: application/json
+Authorization: Bearer {{authToken}}
+
+
+### Borrado lógico por chat
+DELETE {{dpsBase}}/delete-document/soft/chat/1
+Accept: application/json
+Authorization: Bearer {{authToken}}

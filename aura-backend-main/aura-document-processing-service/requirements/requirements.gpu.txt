@@ -1,0 +1,12 @@
+# ============================================
+# GPU build entry point
+# ============================================
+-r base.txt
+
+# ============================================
+# Machine Learning & NLP (CUDA torch)
+# ============================================
+--extra-index-url https://download.pytorch.org/whl/cu130
+torch==2.11.0+cu130
+torchaudio==2.11.0+cu130
+torchvision==0.26.0+cu130

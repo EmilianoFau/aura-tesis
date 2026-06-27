@@ -1,0 +1,104 @@
+.toast {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  min-width: 280px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
+  font-family: var(--font-ui, 'Sora', sans-serif);
+}
+
+/* Estado: borde teñido + ícono/label de color; el fondo sigue el tema */
+.success {
+  border-color: rgba(48, 209, 88, 0.4);
+}
+
+.error {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.toast__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toast__state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toast__state mat-icon {
+  --size: 22px;
+  font-size: var(--size);
+  width: var(--size);
+  height: var(--size);
+}
+
+.toast__state span {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.success .toast__state mat-icon,
+.success .toast__state span {
+  color: var(--color-malachite-500); /* #30d158 — éxito del sistema */
+}
+
+.error .toast__state mat-icon,
+.error .toast__state span {
+  color: var(--destructive); /* #ef4444 */
+}
+
+.toast__close-btn {
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  --size: 32px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.toast__close-btn:hover {
+  background-color: var(--overlay-hover);
+  color: var(--text-primary);
+}
+
+.toast__close-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.toast__close-btn mat-icon {
+  --size: 22px;
+  font-size: var(--size);
+  width: var(--size);
+  height: var(--size);
+}
+
+.toast__message {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+@media (max-width: 900px) {
+  .toast {
+    padding: 10px 12px;
+  }
+
+  .toast__message {
+    font-size: 13px;
+  }
+}

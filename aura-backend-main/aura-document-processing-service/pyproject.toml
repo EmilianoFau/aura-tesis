@@ -1,0 +1,64 @@
+[tool.ruff]
+target-version = "py313"
+line-length = 120
+extend-exclude = ["__pycache__", ".venv", "venv"]
+
+[tool.ruff.lint]
+select = [
+    "F",
+    "E4", "E7", "E9",
+    "W",
+    "B",
+    "C4",
+    "PIE",
+    "RUF",
+]
+ignore = [
+    "E501",
+    "RUF001",
+    "RUF003",
+]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.File",
+    "fastapi.Form",
+    "fastapi.Query",
+    "fastapi.Path",
+    "fastapi.Body",
+    "fastapi.Header",
+    "fastapi.Cookie",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.mypy]
+python_version = "3.13"
+files = ["app"]
+mypy_path = "."
+namespace_packages = true
+explicit_package_bases = true
+ignore_missing_imports = true
+follow_imports = "silent"
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = false
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "app.domain.*"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[[tool.mypy.overrides]]
+module = "app.application.*"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["test"]
+python_files = ["test_*.py"]
+addopts = "-ra"

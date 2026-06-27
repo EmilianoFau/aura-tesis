@@ -1,0 +1,18 @@
+@host = {{host}}
+@token = {{token}}
+@documentCollectionId = {{documentCollectionId}}
+
+### Eliminar colección — soft delete persistente en API
+# El servicio ejecuta borrado lógico preservando lineage de auditoría.
+# Devuelve: 204 sin cuerpo.
+
+DELETE {{host}}/api/v1/document-collections/{{documentCollectionId}}/
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Eliminar colección sin token
+
+DELETE {{host}}/api/v1/document-collections/{{documentCollectionId}}/
+Accept: application/json

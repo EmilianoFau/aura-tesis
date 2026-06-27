@@ -1,0 +1,321 @@
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 10s
+  timeout: 120s
+  retries: 5
+  start_period: 600s
+
+x-healthcheck-api-v1: &healthcheck-api-v1
+  <<: *healthcheck-defaults
+  test:
+    - CMD-SHELL
+    - python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=5)"
+
+x-healthcheck-metrics: &healthcheck-metrics
+  <<: *healthcheck-defaults
+  test:
+    - CMD-SHELL
+    - python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/metrics', timeout=5)"
+
+x-healthcheck-celery-worker: &healthcheck-celery-worker
+  interval: 30s
+  timeout: 120s
+  retries: 5
+  start_period: 45s
+  test:
+    - CMD-SHELL
+    - celery -A aura_notification_service inspect ping --timeout 10 2>/dev/null | grep -q pong || exit 1
+
+services:
+  aura-document-processing-service:
+    build:
+      context: ../../aura-document-processing-service
+      dockerfile: Dockerfile
+    container_name: aura-document-processing-service
+
+    ports:
+      - 8000:8000
+    env_file:
+      - ../../aura-document-processing-service/env/.env.docker
+    environment:
+      HF_TOKEN: ${HF_TOKEN:-}
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    depends_on:
+      aura_db:
+        condition: service_healthy
+      storage:
+        condition: service_healthy
+      queue:
+        condition: service_healthy
+      llm:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+      aura-document-collection-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-api-v1
+      start_period: 600s
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface
+
+  aura-llm-service:
+    build: ../../aura-llm-service
+    container_name: aura-llm-service
+
+    ports:
+      - 8001:8000
+    env_file:
+      - ../../aura-llm-service/env/.env.docker
+    depends_on:
+      llm:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-api-v1
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+  aura-auth-service:
+    build: ../../aura-auth-service
+    container_name: aura-auth-service
+
+    ports:
+      - 8002:8000
+    env_file:
+      - ../../aura-auth-service/.env.docker
+    depends_on:
+      auth_db:
+        condition: service_healthy
+      aura_db:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-defaults
+      test:
+        - CMD-SHELL
+        - python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=5)"
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+  aura-chat-service:
+    build: ../../aura-chat-service
+    container_name: aura-chat-service
+
+    ports:
+      - 8003:8000
+    env_file:
+      - ../../aura-chat-service/env/.env.docker
+    environment:
+      HF_TOKEN: ${HF_TOKEN:-}
+    depends_on:
+      aura_db:
+        condition: service_healthy
+      memory_db:
+        condition: service_healthy
+      aura-llm-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck-api-v1
+      start_period: 300s
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+    volumes:
+      - huggingface_cache:/app/.cache/huggingface
+
+  aura-notification-service:
+    build: ../../aura-notification-service
+    container_name: aura-notification-service
+
+    ports:
+      - 8004:8000
+    env_file:
+      - ../../aura-notification-service/.env.docker
+    depends_on:
+      aura_db:
+        condition: service_healthy
+      memory_db:
+        condition: service_healthy
+      queue:
+        condition: service_healthy
+      aura-auth-service:
+        condition: service_healthy
+    healthcheck: *healthcheck-api-v1
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+  aura-notification-worker:
+    build: ../../aura-notification-service
+    container_name: aura-notification-worker
+
+    command:
+      - celery
+      - -A
+      - aura_notification_service
+      - worker
+      - --loglevel=info
+      - --concurrency=2
+      - --queues=notifications
+    env_file:
+      - ../../aura-notification-service/.env.docker
+    depends_on:
+      aura_db:
+        condition: service_healthy
+      memory_db:
+        condition: service_healthy
+      queue:
+        condition: service_healthy
+      aura-notification-service:
+        condition: service_healthy
+    healthcheck: *healthcheck-celery-worker
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+  aura-document-collection-service:
+    build: ../../aura-document-collection-service
+    container_name: aura-document-collection-service
+
+    ports:
+      - 8005:8000
+    env_file:
+      - ../../aura-document-collection-service/.env.docker
+    depends_on:
+      aura_db:
+        condition: service_healthy
+    healthcheck: *healthcheck-api-v1
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+  aura-gateway:
+    build: ../../aura-gateway
+    container_name: aura-gateway
+
+    ports:
+      - 80:80
+    depends_on:
+      aura-auth-service:
+        condition: service_healthy
+      aura-chat-service:
+        condition: service_healthy
+      aura-llm-service:
+        condition: service_healthy
+      aura-document-processing-service:
+        condition: service_healthy
+      aura-document-collection-service:
+        condition: service_healthy
+      aura-notification-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/health"]
+      interval: 15s
+      timeout: 120s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+
+  llm:
+    build:
+      context: ../llm
+      dockerfile: Dockerfile
+    container_name: llm
+
+    env_file:
+      - ../../aura-llm-service/env/.env.docker
+      - ../../aura-document-processing-service/env/.env.docker
+    volumes:
+      - llm_data:/root/.ollama
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 30s
+      timeout: 120s
+      retries: 10
+      start_period: 1800s
+
+  neo4j:
+    image: neo4j:5-community
+    container_name: neo4j
+
+    environment:
+      NEO4J_AUTH: neo4j/aura_password
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: apoc.*
+      NEO4J_server_default__listen__address: 0.0.0.0
+      NEO4J_dbms_memory_pagecache_size: 512M
+      NEO4J_dbms_memory_heap_max__size: 1G
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
+      interval: 15s
+      timeout: 120s
+      retries: 10
+      start_period: 600s
+    restart: unless-stopped
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+volumes:
+  llm_data:
+  neo4j_data:
+  neo4j_logs:
+  huggingface_cache:

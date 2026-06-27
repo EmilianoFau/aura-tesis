@@ -1,0 +1,99 @@
+@import "primeicons/primeicons.css";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+/* Lienzo base del documento. Coincide con --surface-page del tema oscuro
+   (el tema por defecto, declarado en index.html). Cubre el primer pintado
+   antes de que el tema se aplique sobre <body>, el overscroll y el fondo
+   raíz de las View Transitions, evitando cualquier destello blanco. */
+html {
+  background-color: rgb(21, 21, 21);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-prose, 'Manrope', sans-serif);
+  font-optical-sizing: auto;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+}
+
+button {
+  cursor: pointer;
+}
+
+:root {
+  --app-viewport-height: 100dvh;
+
+  --sidebar-width: 100px;
+  --sidebar-open-width: 296px;
+  --sidebar-border: 1px;
+  --sidebar-gap-y: 0px;
+  --sidebar-padding-x: 15px;
+  --sidebar-padding-t: 15px;
+  --sidebar-padding-b: 22px;
+  --sidebar-border-radius: 24px;
+
+  --sidebar-content-width: calc(
+    var(--sidebar-width) - 2 * var(--sidebar-padding-x) - 2 * var(--sidebar-border)
+  );
+
+  --topbar-height: 120px;
+}
+
+/* ── Transiciones de ruta (View Transitions API) ─────────────────────────
+   Cross-fade sutil + leve desplazamiento de la vista entrante. Es un
+   progressive enhancement: en navegadores sin soporte la app navega igual,
+   sin animación. Definido en estilos globales (no scoped) como pide Angular. */
+@keyframes route-fade-out {
+  to { opacity: 0; }
+}
+@keyframes route-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+::view-transition-old(root) {
+  animation: 90ms cubic-bezier(0.4, 0, 1, 1) both route-fade-out;
+}
+::view-transition-new(root) {
+  animation: 210ms cubic-bezier(0, 0, 0.2, 1) 60ms both route-fade-in;
+}
+
+/* El composer de chat se comparte entre "nuevo chat" (centrado) y un chat
+   específico (abajo): el navegador interpola su posición/tamaño (morph) mientras
+   el resto de la página hace el cross-fade del root. */
+::view-transition-group(chat-composer) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+::view-transition-old(chat-composer),
+::view-transition-new(chat-composer) {
+  /* El contenido es casi idéntico en ambos lados: cross-fade suave para que se
+     perciba como un solo elemento deslizándose. */
+  animation-duration: 460ms;
+}
+
+/* Respeta la preferencia de movimiento reducido: sin animación de transición. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-group(chat-composer),
+  ::view-transition-old(chat-composer),
+  ::view-transition-new(chat-composer) {
+    animation: none;
+  }
+}

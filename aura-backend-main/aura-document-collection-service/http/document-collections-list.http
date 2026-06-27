@@ -1,0 +1,41 @@
+@host = {{host}}
+@token = {{token}}
+
+### Listar colecciones — primera página (page_size por defecto 20)
+# Hace: lista las colecciones de documentos a las que tiene acceso el usuario del token + permiso `LIST_DOCUMENT_COLLECTIONS`.
+# Devuelve: 200 con cuerpo paginado (`count`, `next`, `previous`, `results`).
+
+GET {{host}}/api/v1/document-collections/
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Listar colecciones — página 2
+
+GET {{host}}/api/v1/document-collections/?page=2
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Listar colecciones — page_size personalizado (máx. 100)
+
+GET {{host}}/api/v1/document-collections/?page=1&page_size=50
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Filtros — nombre icontains, created_by y ventana temporal ISO
+
+GET {{host}}/api/v1/document-collections/?name=revisión&created_by=101&ordering=-created_at
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Listar sin token
+
+GET {{host}}/api/v1/document-collections/
+Accept: application/json
