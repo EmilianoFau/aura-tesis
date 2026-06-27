@@ -1,0 +1,210 @@
+/*
+ * Aside fijo en altura de viewport; solo la columna principal hace scroll.
+ * Sin esto, el grid deja crecer el contenido y el scroll queda "roto" entre flex anidados.
+ */
+:host {
+  display: block;
+  height: 100%;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.user-flex {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  font-family: var(--font-ui, 'Sora', sans-serif);
+}
+
+.user-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 260px;
+  padding: 1.25rem 1rem;
+  background-color: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
+  box-sizing: border-box;
+  height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-self: stretch;
+}
+
+.user-nav__back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease;
+}
+
+.user-nav__back:hover {
+  background: var(--overlay-hover);
+  color: var(--text-primary);
+}
+
+.user-nav__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.user-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.user-nav__link:hover {
+  background: var(--overlay-subtle);
+  color: var(--text-primary);
+}
+
+.user-nav__link.is-active {
+  background: var(--accent-surface);
+  color: var(--text-primary);
+}
+
+.user-nav__link i {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.user-nav__link.is-active i {
+  color: var(--accent-fg);
+}
+
+/* ── Foco visible (teclado) — DESIGN.md ──────────────────────── */
+.user-nav__back:focus-visible,
+.user-nav__link:focus-visible,
+.user-nav__logout:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.user-nav__logout {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: auto;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--destructive);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--destructive);
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.user-nav__logout:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--destructive);
+}
+
+body.theme-light .user-nav__logout {
+  background: rgb(220, 38, 38);
+  border-color: rgb(185, 28, 28);
+  color: #fff;
+  font-weight: 500;
+}
+
+body.theme-light .user-nav__logout:hover {
+  background: rgb(185, 28, 28);
+  color: #fff;
+}
+
+.user-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--surface-page);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.user-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.user-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.user-content::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+/*
+ * El outlet llena el área de contenido para que las secciones (Perfil,
+ * Invitaciones, Notificaciones) ocupen toda la altura. El componente enrutado
+ * es hermano del <router-outlet>; cada uno fija `flex: 1` en su propio :host
+ * (la encapsulación de vistas impide estirarlo con un selector `> *` desde acá).
+ * El scroll lo hace .user-content cuando el contenido excede el viewport.
+ */
+.user-main-outlet {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  min-height: 0;
+}
+
+/* El router-outlet no pinta; ocultarlo evita que ocupe espacio como flex item. */
+.user-main-outlet > router-outlet {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .user-flex {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
+  .user-nav {
+    width: 100%;
+    min-width: 0;
+    max-height: none;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .user-nav__links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+  }
+
+  .user-nav__logout {
+    margin-top: 0;
+  }
+}

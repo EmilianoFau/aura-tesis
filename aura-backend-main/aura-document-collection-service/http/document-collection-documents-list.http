@@ -1,0 +1,24 @@
+@host = {{host}}
+@token = {{token}}
+@documentCollectionId = {{documentCollectionId}}
+
+### Listar enlaces documento ↔ colección (paginado)
+
+GET {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Con page_size y filtros conocidos (`document_id`, `document_name`, `ordering`)
+
+GET {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/?page_size=25&ordering=-created_at
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Sin Bearer
+
+GET {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/
+Accept: application/json

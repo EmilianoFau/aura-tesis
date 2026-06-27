@@ -1,0 +1,46 @@
+@llmBase = http://localhost:8001/api/v1
+@authToken = user_token_123
+@chatId = 1
+
+### Agente RAG — JSON (POST /api/v1/rag-agent)
+# @timeout 600
+POST {{llmBase}}/rag-agent
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "messages": [
+    {
+      "role": "human",
+      "content": "Resumí en tres viñetas qué cubre el documento de contexto."
+    }
+  ],
+  "chat_id": {{chatId}}
+}
+
+
+### Agente RAG — Streaming SSE (POST /api/v1/rag-agent/stream)
+# @timeout 600
+POST {{llmBase}}/rag-agent/stream
+Accept: text/event-stream
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "messages": [
+    {
+      "role": "human",
+      "content": "Mi nombre es Ana."
+    },
+    {
+      "role": "assistant",
+      "content": "Hola Ana, ¿en qué puedo ayudarte?"
+    },
+    {
+      "role": "human",
+      "content": "¿Te acordás cómo me llamo?"
+    }
+  ],
+  "chat_id": {{chatId}}
+}

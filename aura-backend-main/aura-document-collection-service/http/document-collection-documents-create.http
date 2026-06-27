@@ -1,0 +1,53 @@
+@host = {{host}}
+@token = {{token}}
+@documentCollectionId = {{documentCollectionId}}
+@documentId = {{documentId}}
+
+### Vincular documento ya existente (`document_registry`) a esta colección
+# Devuelve: 201 y el objeto de enlace; 409 si `duplicate_document_link`.
+
+POST {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "document_id": {{documentId}}
+}
+
+###
+
+### Vincular otro numeric id (ajústalo contra tu base)
+
+POST {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "document_id": 999999
+}
+
+###
+
+### Validación — document_id ilegal (≤0)
+
+POST {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "document_id": 0
+}
+
+###
+
+### Cuerpo vacío (falta `document_id`)
+
+POST {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{}

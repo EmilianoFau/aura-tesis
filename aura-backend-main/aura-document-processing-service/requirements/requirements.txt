@@ -1,0 +1,12 @@
+# ============================================
+# CPU build entry point
+# ============================================
+-r base.txt
+
+# ============================================
+# Machine Learning & NLP (CPU torch)
+# ============================================
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.11.0+cpu
+torchaudio==2.11.0+cpu
+torchvision==0.26.0+cpu

@@ -1,0 +1,56 @@
+@host = {{host}}
+@token = {{token}}
+@documentCollectionId = {{documentCollectionId}}
+@classificationLevelIdAlt = {{classificationLevelIdAlt}}
+@compartmentId = {{compartmentId}}
+@compartmentIdAlt = {{compartmentIdAlt}}
+
+### PATCH — renombrar solamente
+
+PATCH {{host}}/api/v1/document-collections/{{documentCollectionId}}/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Renombrado por HTTP Client"
+}
+
+###
+
+### PATCH — reemplazar compartimentos (lista nueva no vacía reescribe pivotes)
+
+PATCH {{host}}/api/v1/document-collections/{{documentCollectionId}}/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "compartment_ids": [{{compartmentId}}, {{compartmentIdAlt}}]
+}
+
+###
+
+### PATCH — cambiar nivel de clasificación del agrupamiento
+
+PATCH {{host}}/api/v1/document-collections/{{documentCollectionId}}/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "classification_level_id": {{classificationLevelIdAlt}}
+}
+
+###
+
+### PATCH — nombre vacío (validación JSON)
+
+PATCH {{host}}/api/v1/document-collections/{{documentCollectionId}}/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": ""
+}

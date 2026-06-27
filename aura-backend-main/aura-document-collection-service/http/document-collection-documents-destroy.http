@@ -1,0 +1,18 @@
+@host = {{host}}
+@token = {{token}}
+@documentCollectionId = {{documentCollectionId}}
+@documentLinkId = {{documentLinkId}}
+
+### Eliminar vínculo (usa el **`pk` de `document_in_document_collection`**, no el `document_id` del registro)
+# La respuesta anterior de `POST .../documents/` devuelve `id` dentro del JSON (`id`, `created_by`, …) — ese es el valor que debe ir aquí como `documentLinkId`.
+
+DELETE {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/{{documentLinkId}}/
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Intentar DELETE sin Bearer
+
+DELETE {{host}}/api/v1/document-collections/{{documentCollectionId}}/documents/{{documentLinkId}}/
+Accept: application/json

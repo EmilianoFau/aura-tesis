@@ -1,0 +1,24 @@
+@host = {{host}}
+@token = {{token}}
+@documentCollectionId = {{documentCollectionId}}
+
+### Obtener una colección por id
+
+GET {{host}}/api/v1/document-collections/{{documentCollectionId}}/
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Obtener colección — otro id
+
+GET {{host}}/api/v1/document-collections/{{documentCollectionIdAlt}}/
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Sin Bearer
+
+GET {{host}}/api/v1/document-collections/{{documentCollectionId}}/
+Accept: application/json

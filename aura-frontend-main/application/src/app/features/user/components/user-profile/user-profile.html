@@ -1,0 +1,56 @@
+<div class="user-profile-container">
+  <div class="profile-header">
+    <div class="profile-avatar">
+      <span class="avatar-text">{{ avatarInitials() }}</span>
+    </div>
+    <div class="profile-info">
+      <h1 class="profile-name">{{ displayName() }}</h1>
+      @if (displayRoles().length > 0) {
+        <p class="profile-role">{{ displayRoles()[0] }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="profile-content-wrapper">
+    <div class="profile-content">
+      <div class="profile-section">
+        <h2 class="section-title">
+          <i class="pi pi-user"></i>
+          Información personal
+        </h2>
+
+        <div class="info-list">
+          <div class="info-row">
+            <span class="info-row__icon"><i class="pi pi-id-card"></i></span>
+            <div class="info-row__text">
+              <span class="info-label">Usuario</span>
+              <span class="info-value">{{ displayName() }}</span>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="info-row__icon"><i class="pi pi-envelope"></i></span>
+            <div class="info-row__text">
+              <span class="info-label">Email</span>
+              <span class="info-value">{{ displayEmail() }}</span>
+            </div>
+          </div>
+
+          @if (displayRoles().length > 0) {
+            <div class="info-row">
+              <span class="info-row__icon"><i class="pi pi-shield"></i></span>
+              <div class="info-row__text">
+                <span class="info-label">Roles</span>
+                <div class="info-roles">
+                  @for (role of displayRoles(); track role) {
+                    <span class="info-role-chip">{{ role }}</span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
